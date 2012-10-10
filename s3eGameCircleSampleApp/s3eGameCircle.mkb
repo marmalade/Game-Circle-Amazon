@@ -1,0 +1,38 @@
+#!/usr/bin/env mkb
+
+
+subprojects
+{
+    ../s3eGameCircle
+}
+
+assets
+{
+    (data)
+}
+
+option strict
+
+files
+{
+
+    (src)
+    ExamplesMain.cpp
+    ExamplesMain.h
+    Buttons.cpp
+    s3eGameCircle.cpp
+    main.cpp
+}
+
+
+includepath src
+
+deployments {
+    name = 's3eGameCircleSampleApp'
+    version=0.0.1
+    provider = Aerohills
+    s3e-compression=lzma
+
+    android-pkgname='com.aerohills.amazon.tests'
+    android-install-location=2
+}

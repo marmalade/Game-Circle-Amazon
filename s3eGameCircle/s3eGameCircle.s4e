@@ -1,0 +1,467 @@
+#
+# Copyright (C) 2012 Funlinker.
+# All Rights Reserved.
+
+#no_template_code
+callbacks
+#no_init_term
+include:
+
+#include "s3eTypes.h"
+
+/**
+ * @addtogroup s3egroup
+ * @{
+ */
+
+/**
+ * @defgroup gamecircleapigroup S3E Amazon Billing API reference
+ *
+ * Provides an API for Amazon Game Circle.
+ *
+ * @supported
+ * - android
+ *
+ * @platnote This API is for Android only. 
+ *
+ */
+
+/**
+ * @}
+ * @addtogroup gamecircleapigroup
+ * @{
+ */
+
+
+/**
+ * Indicates the maximum number of SKUs that can be provided to s3eAmazonInitiatePurchaseUpdatesRequest()
+ */
+//#define s3eAmazonBilling_ITEM_DATA_REQUEST_MAX_SKUS 100
+
+
+/**
+ * s3eGameCircleGamesFeature type
+ * Enumeration of features Amazon Games provides. Used when initializing the AmazonGamesClient to list the features used by the application.
+ */
+typedef enum s3eGameCircleGamesFeature {
+    /**
+     * The achievement service is used.
+     */
+    S3E_GAMECIRCLE_ACHIEVEMENTS = 0,
+    /**
+     *  The leaderboard service is used.
+     */
+    S3E_GAMECIRCLE_LEADERBOARDS = 1,
+    /**
+     *  The whispersync service is used.
+     */
+    S3E_GAMECIRCLE_WHISPERSYNC = 2
+} s3eGameCircleGamesFeature;
+
+
+/**
+ * s3eGameCircleStatus type
+ * Status values that are only of interest to the client (i.e. not to be used by the service)
+ */
+typedef enum s3eGameCircleStatus {
+    /**
+     * The service could not authorize the client.
+     */
+    S3E_GAMECIRCLE_CANNOT_AUTHORIZE = 5,
+    /**
+     * The service could not bind either because it does not exist, or permissions have not been granted.
+     */
+    S3E_GAMECIRCLE_CANNOT_BIND = 3,
+    /**
+     * The service is in the process of initializing.
+     */
+    S3E_GAMECIRCLE_INITIALIZING = 0,
+    /**
+     * The current session is not longer valid.
+     */
+    S3E_GAMECIRCLE_INVALID_SESSION = 4,
+    /**
+     * The device is not registered with an account
+     */
+    S3E_GAMECIRCLE_NOT_AUTHENTICATED = 8,
+    /**
+     * The game in not authorized to use the service.
+     */
+    S3E_GAMECIRCLE_NOT_AUTHORIZED = 6,
+    /**
+     * The service is connected and ready to be used
+     */
+    S3E_GAMECIRCLE_SERVICE_CONNECTED = 1,
+    /**
+     * The service has been disconnected, most likely forcefully by the operating system
+     */
+    S3E_GAMECIRCLE_SERVICE_DISCONNECTED = 2,
+    /**
+     * The device is not opted-in to use the service
+     */
+    S3E_GAMECIRCLE_SERVICE_NOT_OPTED_IN = 7,
+    /**
+     * Initialize callback not still returned.
+     */
+    S3E_GAMECIRCLE_STILL_INITIALIZING = 9,
+    /**
+     * Initialize method was not called
+     */
+    S3E_GAMECIRCLE_STILL_INIT_NOT_CALLED = 10
+} s3eGameCircleStatus;
+
+
+/**
+ * LeaderboardFilter type
+ * 
+ */
+typedef enum s3eGameCircleLeaderboardFilter {
+    /**
+     * 
+     */
+    S3E_GAMECIRCLE_FRIENDS_ALL_TIME = 0,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_GLOBAL_ALL_TIME = 1,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_GLOBAL_DAY = 2,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_GLOBAL_WEEK  = 3,
+} s3eGameCircleLeaderboardFilter;
+
+/**
+ * ConflictStrategy type
+ * 
+ */
+typedef enum s3eGameCircleConflictStrategy {
+    /**
+     * 
+     */
+    S3E_GAMECIRCLE_AUTO_RESOLVE_TO_CLOUD = 1,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_AUTO_RESOLVE_TO_IGNORE = 2,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_PLAYER_SELECT = 0,
+} s3eGameCircleConflictStrategy;
+
+/**
+ * s3eGameCirclePopUpLocation type
+ * Various options for placement of the pop up notifications
+ */
+typedef enum s3eGameCirclePopUpLocation {
+    /**
+     * 
+     */
+    S3E_GAMECIRCLE_BOTTOM_CENTER = 0,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_BOTTOM_LEFT = 1,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_BOTTOM_RIGHT = 2,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_TOP_CENTER = 3,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_TOP_LEFT = 4,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_OP_RIGHT = 5,
+} s3eGameCirclePopUpLocation;
+
+
+/**
+ * s3eGameCircleBlobCallbackStatus type
+ * 
+ */
+typedef enum s3eGameCircleBlobCallbackStatus {
+    /**
+     * 
+     */
+    S3E_GAMECIRCLE_BLOB_ALREADYSYNCHRONIZED = 0,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_BLOB_CONFLICTDEFERRAL = 1,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_BLOB_GAMEUPLOADSUCCESS = 2,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_BLOB_SYNCHRONIZEFAILURE = 3,
+    /**
+     *  
+     */
+    S3E_GAMECIRCLE_BLOB_NEWGAMEDATA = 4,
+} s3eGameCircleBlobCallbackStatus;
+
+
+/**
+ * s3eGameCircleErrorCode type
+ * 
+ */
+typedef enum s3eGameCircleErrorCode {
+    /**
+     * No error occurred.
+     */
+    S3E_GAMECIRCLE_NONE = 0,
+    /**
+     * Indicates an error by the Service that it could not recover from.
+     */
+    S3E_GAMECIRCLE_UNRECOVERABLE = 1,
+    /**
+     * Indicates the Amazon Games Service is not bound and ready.
+     */
+    S3E_GAMECIRCLE_SERVICE_NOT_READY = 2,
+    /**
+     * Indicates an IOException was thrown while attempting an operation
+     */
+    S3E_GAMECIRCLE_IO_ERROR = 3,
+    /**
+     * Indicates a network connection error has occurred, most likely due to losing internet connectivity.
+     */
+    S3E_GAMECIRCLE_CONNECTION_ERROR = 4,
+    /**
+     * Indicates the device is not currently authenticated to perform an action. This can be avoided by checking AmazonGames.isAuthenticated()
+     */
+    S3E_GAMECIRCLE_AUTHENTICATION_ERROR = 5,
+    /**
+     * General data validation error indicates data provided is not valid
+     */
+    S3E_GAMECIRCLE_DATA_VALIDATION_ERROR = 6,
+} s3eGameCircleErrorCode;
+
+/**
+ * This struct is given to S3E_GAMECIRCLE_SYNCHRONIZE_BLOB_CALLBACK callbacks.
+ */
+typedef struct s3eGameCircleBlobResponse {
+    /**
+     * Request status.
+     */
+    s3eGameCircleBlobCallbackStatus m_Status;
+    /**
+     *
+     */
+    s3eGameCircleErrorCode m_ErrorCode;
+    /**
+     */
+    void* m_Data;
+    
+    /**
+     *  
+     */
+    int m_DataLen;
+} s3eAmazonBillingItemDataResponse;
+
+
+typedef enum s3eGameCircleCallback {
+    /**
+     * Callback for handling responses to s3eGameCircleInitialize.
+     * systemData param will be status
+     */
+    S3E_GAMECIRCLE_INIT_CALLBACK,
+    /**
+     * Callback for handling responses to s3eGameCircleGetPlayerAlias.
+     * In system data pointer will be pointer to alias string. The string are encoded in UTF-8 and kept valid until your callback returns.
+     */
+    S3E_GAMECIRCLE_PLAYER_ALIAS_CALLBACK,
+    /**
+     *
+     */
+    S3E_GAMECIRCLE_SYNCHRONIZE_BLOB_CALLBACK,
+    /**
+     *
+     */
+    S3E_GAMECIRCLE_SYNCHRONIZE_BLOB_PROGRESS_CALLBACK,
+    /**
+     * The number of in-app billing callbacks. Required by S3E.
+     */
+    S3E_GAMECIRCLE_CALLBACK_MAX
+} s3eGameCircleCallback;
+
+
+functions:
+
+
+
+/**
+ * First method You must call
+ * @param bool useAchievements Does game uses achievements?
+ * @param bool useWhispersync Does game uses wispersync?
+ * @param bool useLeaderboards Does game uses leaderboards?
+ * @param firsRun Is game first run on this device
+ * @return status
+ * 
+ */
+void s3eGameCircleInitialize(bool useAchievements, bool useWhispersync, bool useLeaderboards, bool firsRun) run_on_os_thread
+
+/**
+ * Get status
+ * @return status
+ * 
+ */
+s3eGameCircleStatus s3eGameCircleGetStatus() S3E_GAMECIRCLE_STILL_INIT_NOT_CALLED
+
+/**
+ * For applications where the AmazonGames client is instantiated well before it is used, this method can ensure that the client is bound and ready for use. 
+ * However, it is highly recommended to wait for the S3E_GAMECIRCLE_INIT_CALLBACK callback method to be called instead.
+ * @return false until the service is bound and ready to use. Returns true otherwise.
+ */
+bool s3eGameCircleIsReady() false
+
+/**
+ * Initiate a request to retrieve the player's alias from the player profile.
+ * @par developerPayload A string, encoded in UTF-8, to be attached to the purchase request. If one is given,
+ * it will be included in the corresponding ???s3eAndroidMarketBillingOrder???. Useful for telling apart
+ * purchases of identical products. 
+ */
+void s3eGameCircleGetPlayerAlias(const char* developerPayload S3E_DEFAULT(NULL))
+
+/**
+ * 
+ * 
+ */
+void s3eGameCircleShowAchievementsOverlay()
+
+/**
+ * Updates progress toward the specified achievement by the specified amount. Result is returned through the returned handle. 
+ * The response is a generic RequestResponse If a value outside of range is submitted, it is capped at 100 or 0. If submitted value is less than the stored value, 
+ * the update is ignored.
+ * 
+ */
+void s3eGameCircleUpdateAchievement(const char* achievementId, float percentComplete, const char* developerPayload S3E_DEFAULT(NULL))
+
+/**
+ * Resets all of the achievements for the game to 0%. AchievementsClient that were made visible go back to invisible where appropriate
+ *
+ */
+void s3eGameCircleResetAchievements()
+
+/**
+ * Reset the specified achievement to 0%. Achievement is made invisible again if appropriate.
+ */
+void s3eGameCircleResetAchievement(const char* achievementId, const char* developerPayload S3E_DEFAULT(NULL))
+
+/**
+ * Sets the pop up location for toast notifications
+ * NOT IMPLEMENTED
+ */
+void s3eGameCircleSetPopUpLocation(s3eGameCirclePopUpLocation location)
+
+/**
+ * Show the leaderboard overlay for a particular leaderboard.
+ */
+void s3eGameCircleShowLeaderboardOverlay(const char* leaderboardId)
+
+/**
+ * Show the leaderboards overlay for the game.
+ */
+void s3eGameCircleShowLeaderboardsOverlay()
+
+/**
+ * Request that a score be submitted to the leaderboard.
+ */
+void s3eGameCircleSubmitScore(const char* leaderboardId, int64_t score, const char* developerPayload S3E_DEFAULT(NULL))
+
+/**
+ * Request all leaderboards for this game. The results will be returned in the reponse handle as a RequestLeaderboardsResponse.
+ *
+ * NOT IMPLEMENTED
+ */
+void s3eGameCircleGetLeaderboards(const char* developerPayload S3E_DEFAULT(NULL))
+
+/**
+ * Request a selection of scores from a leaderboard based on the filters and range selected. Result is returned to the ResponseHandler callback
+ *
+ * NOT IMPLEMENTED
+ */
+void s3eGameCircleGetScores(const char* leaderboardId, s3eGameCircleLeaderboardFilter filter, int startRank, int count, const char* developerPayload S3E_DEFAULT(NULL))
+
+/**
+ * Requests the current users top RankedScore for the leaderboard. Returns a handle that receives the response
+ *
+ * NOT IMPLEMENTED
+ */
+void s3eGameCircleGetLocalPlayerScore(const char* leaderboardId, s3eGameCircleLeaderboardFilter filter, const char* developerPayload S3E_DEFAULT(NULL))
+
+/**
+ * true when there is multi-file game data that was previously downloaded from the cloud during a synchronize call, but was never unpacked over the file system.
+ */
+bool s3eGameCircleHasNewMultiFileGameData() false
+
+/**
+ * This will unpack and overlay multi-file game data that was previously downloaded from the cloud during a synchronize call, but never unpacked.
+ *
+ */
+void s3eGameCircleUnpackNewMultiFileGameData()
+
+/**
+ * Initiates an asynchronous request to synchronize the game with the latest version of the game state in the cloud. 
+ * The response will be handled by the callback specified by the request. If a previous synchronizeProgress() call had failed, 
+ * this method will attempt to synchronize the progress. This is typically called during onResume() events.
+ *
+ */
+void s3eGameCircleSynchronizeBlob(s3eGameCircleConflictStrategy conflictStrategy S3E_DEFAULT(S3E_GAMECIRCLE_PLAYER_SELECT))
+
+/**
+ *  Provides options for saving game data to the Amazon cloud as variable length byte data
+ *
+ */
+void s3eGameCirclenchronizeBlobProgress(const char* description, const void* data, int dataLen, s3eGameCircleConflictStrategy conflictStrategy S3E_DEFAULT(S3E_GAMECIRCLE_PLAYER_SELECT))
+
+/**
+ * Initiates an asynchronous request to synchronize the game with the latest version of the game state in the cloud. 
+ * The response will be handled by the callback specified by the request. If a previous synchronizeProgress() call had failed, 
+ * this method will attempt to synchronize the progress. This is typically called during onResume() events.
+ *
+ * NOT IMPLEMENTED
+ *
+ */
+void s3eGameCircleSynchronizeMultiFile(s3eGameCircleConflictStrategy conflictStrategy S3E_DEFAULT(S3E_GAMECIRCLE_PLAYER_SELECT))
+
+/**
+ * Initiates an asynchronous request to synchronize the current game state with the latest version of the game state in the cloud. 
+ * The response will be handled by the callback specified by the request. This is typically called when the game reaches a checkpoint or after progress has been made.
+ *
+ * NOT IMPLEMENTED
+ *
+ */
+void s3eGameCircleSynchronizeMultiFileProgress(const char* description, s3eGameCircleConflictStrategy conflictStrategy S3E_DEFAULT(S3E_GAMECIRCLE_PLAYER_SELECT))
+
+/**
+ * Initiates an asynchronous request to revert the game state to a previously saved state. The player will be presented with a list of previous checkpoints to select to revert to.
+ *
+ */
+void s3eGameCircleRequestRevertBlob()
+
+/**
+ * Initiates an asynchronous request to revert the game state to a previously saved state. The player will be presented with a list of previous checkpoints to select to revert to. 
+ * This should only be called by games that synchronize
+ *
+ * NOT IMPLEMENTED
+ *
+ */
+void s3eGameCircleRequestRevertMultiFile()
+
+
+
+
+append:
+/** @} */
